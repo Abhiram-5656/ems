@@ -12,6 +12,7 @@ import Register from "./components/auth/Register";
 import Dashboard from "./components/dashboard/Dashboard";
 import EmployeesPage from "./pages/EmployeesPage";
 import LeavesPage from "./pages/LeavesPage";
+import AdminLeavesPage from "./pages/AdminLeavesPage";
 import AttendancePage from "./pages/AttendancePage";
 import PayrollPage from "./pages/PayrollPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -82,6 +83,14 @@ function App() {
           element={
             <ProtectedRoute>
               <LeavesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-leaves"
+          element={
+            <ProtectedRoute>
+              <AdminLeavesPage />
             </ProtectedRoute>
           }
         />

@@ -6,16 +6,20 @@ import * as employeeAPI from '../api/employeeAPI';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required('First name is required'),
-  lastName: Yup.string().required('Last name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  phone: Yup.string().required('Phone is required'),
-  password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-  department: Yup.string(),
-  position: Yup.string(),
-  salary: Yup.number(),
-});
+const createValidationSchema = (isEditing) => {
+  return Yup.object().shape({
+    firstName: Yup.string().required('First name is required'),
+    lastName: Yup.string().required('Last name is required'),
+    email: Yup.string().email('Invalid email').required('Email is required'),
+    phone: Yup.string().required('Phone is required'),
+    password: isEditing 
+      ? Yup.string().min(6, 'Password must be at least 6 characters')
+      : Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+    department: Yup.string(),
+    position: Yup.string(),
+    salary: Yup.number(),
+  });
+};
 
 export default function EmployeesPage() {
   const { user } = useSelector((state) => state.auth);
@@ -26,6 +30,7 @@ export default function EmployeesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [editingEmployee, setEditingEmployee] = useState(null);
 
   useEffect(() => {
     fetchEmployees();
@@ -59,7 +64,13 @@ export default function EmployeesPage() {
 
   const handleUpdateEmployee = async (values, { setSubmitting }) => {
     try {
-      await employeeAPI.updateEmployee(editingId, values);
+      // Don't send empty password to backend
+      const updateData = { ...values };
+      if (!updateData.password) {
+        delete updateData.password;
+      }
+      
+      await employeeAPI.updateEmployee(editingId, updateData);
       setEditingId(null);
       setShowForm(false);
       await fetchEmployees();
@@ -90,6 +101,7 @@ export default function EmployeesPage() {
             <button
               onClick={() => {
                 setEditingId(null);
+                setEditingEmployee(null);
                 setShowForm(!showForm);
               }}
               className="btn-primary bg-blue-600 hover:bg-blue-700 text-white px-4 py-2"
@@ -105,7 +117,7 @@ export default function EmployeesPage() {
               {editingId ? 'Edit Employee' : 'Add New Employee'}
             </h2>
             <Formik
-              initialValues={{
+              initialValues={editingEmployee || {
                 firstName: '',
                 lastName: '',
                 email: '',
@@ -115,7 +127,8 @@ export default function EmployeesPage() {
                 position: '',
                 salary: '',
               }}
-              validationSchema={validationSchema}
+              enableReinitialize={true}
+              validationSchema={createValidationSchema(!!editingId)}
               onSubmit={editingId ? handleUpdateEmployee : handleCreateEmployee}
             >
               {({ isSubmitting }) => (
@@ -146,7 +159,7 @@ export default function EmployeesPage() {
                     </div>
 
                     <div className="form-group">
-                      <label className="label">Password</label>
+                      <label className="label">Password {editingId && '(leave blank to keep current)'}</label>
                       <Field type="password" name="password" className="input-field" placeholder="Password" />
                       <ErrorMessage name="password" component="div" className="error-text" />
                     </div>
@@ -177,7 +190,11 @@ export default function EmployeesPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setShowForm(false)}
+                      onClick={() => {
+                        setShowForm(false);
+                        setEditingEmployee(null);
+                        setEditingId(null);
+                      }}
                       className="btn-secondary bg-gray-600 hover:bg-gray-700 text-white px-6 py-2"
                     >
                       Cancel
@@ -241,6 +258,16 @@ export default function EmployeesPage() {
                               <button
                                 onClick={() => {
                                   setEditingId(emp._id);
+                                  setEditingEmployee({
+                                    firstName: emp.firstName || '',
+                                    lastName: emp.lastName || '',
+                                    email: emp.email || '',
+                                    phone: emp.phone || '',
+                                    password: '',
+                                    department: emp.department || '',
+                                    position: emp.position || '',
+                                    salary: emp.salary || '',
+                                  });
                                   setShowForm(true);
                                 }}
                                 className="btn-secondary text-xs px-2 py-1 mr-2 bg-blue-600 hover:bg-blue-700 text-white"

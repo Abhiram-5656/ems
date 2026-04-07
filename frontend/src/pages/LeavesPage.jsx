@@ -62,19 +62,34 @@ export default function LeavesPage() {
 
   const handleApplyLeave = async (values, { setSubmitting, resetForm }) => {
     try {
-      const startDate = new Date(values.startDate);
-      const endDate = new Date(values.endDate);
-      const numberOfDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      // Ensure dates are in proper ISO string format
+      const startDate = values.startDate ? new Date(values.startDate).toISOString().split('T')[0] : '';
+      const endDate = values.endDate ? new Date(values.endDate).toISOString().split('T')[0] : '';
+
+      if (!startDate || !endDate) {
+        alert('Please select both start and end dates');
+        setSubmitting(false);
+        return;
+      }
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const numberOfDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
 
       await leaveAPI.applyLeave({
-        ...values,
+        leaveType: values.leaveType,
+        startDate,
+        endDate,
+        reason: values.reason,
         numberOfDays,
       });
       resetForm();
       setShowForm(false);
       await fetchLeaves();
+      alert('Leave request submitted successfully!');
     } catch (error) {
       console.error('Error applying leave:', error);
+      alert(error.response?.data?.message || 'Failed to apply leave. Please try again.');
     } finally {
       setSubmitting(false);
     }

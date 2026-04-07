@@ -205,7 +205,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Upcoming Leaves */}
+      Upcoming Leaves
       {dashboard.upcomingLeaves && dashboard.upcomingLeaves.length > 0 && (
         <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">

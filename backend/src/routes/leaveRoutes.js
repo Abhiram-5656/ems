@@ -14,6 +14,9 @@ router.get('/my-applications', authenticate, leaveController.getLeaveApplication
 // Get pending leaves (for approval)
 router.get('/pending', authenticate, authorize('ADMIN', 'HR', 'MANAGER'), leaveController.getPendingLeaves);
 
+// Get all leaves (for admin dashboard)
+router.get('/admin/all', authenticate, authorize('ADMIN', 'HR'), leaveController.getAllLeaves);
+
 // Approve leave
 router.put('/:id/approve', authenticate, authorize('ADMIN', 'HR', 'MANAGER'), leaveController.approveLeave);
 

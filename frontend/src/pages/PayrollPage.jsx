@@ -36,12 +36,26 @@ export default function PayrollPage() {
   const fetchPayrolls = async () => {
     try {
       setLoading(true);
-      const res = await payrollAPI.getPayroll({
-        page,
-        limit: 10,
-        month: filters.month || '',
-        year: filters.year || '',
-      });
+      let res;
+      
+      // Use different endpoint based on user role
+      if (user?.role?.name === 'ADMIN' || user?.role?.name === 'HR') {
+        res = await payrollAPI.getPayroll({
+          page,
+          limit: 10,
+          month: filters.month || '',
+          year: filters.year || '',
+        });
+      } else {
+        // For employees, get their own payroll only
+        res = await payrollAPI.getEmployeePayroll({
+          page,
+          limit: 10,
+          month: filters.month || '',
+          year: filters.year || '',
+        });
+      }
+      
       setPayrolls(res.data.data);
       setSummary(res.data.summary || {});
       setTotalPages(res.data.pagination?.pages || 1);

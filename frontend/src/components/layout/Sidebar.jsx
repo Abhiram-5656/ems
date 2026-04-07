@@ -89,8 +89,9 @@ export default function Sidebar() {
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊', roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'] },
     { path: '/employees', label: 'Employees', icon: '👥', roles: ['ADMIN', 'HR', 'MANAGER'] },
-    { path: '/attendance', label: 'Attendance', icon: '✓', roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'] },
-    { path: '/leaves', label: 'Leaves', icon: '📅', roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'] },
+    { path: '/attendance', label: 'Attendance', icon: '✓', roles: [ 'HR', 'MANAGER', 'EMPLOYEE'] },
+    { path: '/leaves', label: 'Leaves', icon: '📅', roles: [ 'HR', 'MANAGER', 'EMPLOYEE'] },
+    { path: '/admin-leaves', label: 'Employee-Leaves', icon: '📋', roles: ['ADMIN', 'HR'] },
     { path: '/payroll', label: 'Payroll', icon: '💰', roles: ['ADMIN', 'HR'] },
     { path: '/profile', label: 'My Profile', icon: '👤', roles: ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE'] },
   ];

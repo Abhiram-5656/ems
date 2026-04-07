@@ -150,9 +150,32 @@ export const getEmployeePayroll = async (req, res) => {
 
     const total = await Payroll.countDocuments(query);
 
+    // Calculate summary
+    const summary = await Payroll.aggregate([
+      { $match: query },
+      {
+        $group: {
+          _id: null,
+          totalGross: { $sum: '$grossSalary' },
+          totalNet: { $sum: '$netSalary' },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalGross: 1,
+          totalNet: 1,
+          totalDeductions: { $subtract: ['$totalGross', '$totalNet'] },
+          count: 1,
+        },
+      },
+    ]);
+
     res.status(200).json({
       success: true,
       data: payrolls,
+      summary: summary.length > 0 ? summary[0] : { totalGross: 0, totalDeductions: 0, totalNet: 0, count: 0 },
       pagination: {
         total,
         page: parseInt(page),
