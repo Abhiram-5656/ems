@@ -23,6 +23,7 @@ app.use(
     origin: (origin, callback) => {
       const allowedOrigins = [
         config.frontendUrl,
+        "https://ems-1-3onu.onrender.com",
         "https://ems-1-v8rq.onrender.com/api",
         'http://localhost:5173',
         'http://localhost:5174',
