@@ -382,3 +382,10 @@ html, body, #root {
   padding: 0;
   background-color: #ffffff; /* FULL WHITE */
 }
+.text-right{
+  display:flex;
+  text-align:center;
+  justify-content:center;
+  align-items:center;
+}
+  
